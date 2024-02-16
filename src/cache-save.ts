@@ -34,8 +34,8 @@ const cachePackages = async () => {
   const {'global-packages': cachePath} = await getNuGetFolderPath();
 
   if (!fs.existsSync(cachePath)) {
-    try{
-      fs.mkdirSync(cachePath, { recursive: true });
+    try {
+      fs.mkdirSync(cachePath, {recursive: true});
     } catch (error) {
       throw new Error(
         `Cache folder path is retrieved for .NET CLI but doesn't exist on disk: ${cachePath}`
