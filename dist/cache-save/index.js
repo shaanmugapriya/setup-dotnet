@@ -80384,7 +80384,12 @@ const cachePackages = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     const { 'global-packages': cachePath } = yield (0, cache_utils_1.getNuGetFolderPath)();
     if (!node_fs_1.default.existsSync(cachePath)) {
-        throw new Error(`Cache folder path is retrieved for .NET CLI but doesn't exist on disk: ${cachePath}`);
+        try {
+            node_fs_1.default.mkdirSync(cachePath, { recursive: true });
+        }
+        catch (error) {
+            throw new Error(`Unable to create folder ${cachePath}`);
+        }
     }
     if (primaryKey === state) {
         core.info(`Cache hit occurred on the primary key ${primaryKey}, not saving cache.`);
