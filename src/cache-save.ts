@@ -37,9 +37,7 @@ const cachePackages = async () => {
     try {
       fs.mkdirSync(cachePath, {recursive: true});
     } catch (error) {
-      throw new Error(
-        `Unable to create folder ${cachePath}`
-      );
+      throw new Error(`Unable to create folder ${cachePath}`);
     }
   }
 
