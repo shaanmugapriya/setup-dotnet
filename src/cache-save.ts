@@ -38,7 +38,7 @@ const cachePackages = async () => {
       fs.mkdirSync(cachePath, {recursive: true});
     } catch (error) {
       throw new Error(
-        `Cache folder path is retrieved for .NET CLI but doesn't exist on disk: ${cachePath}`
+        `Unable to create folder ${cachePath}`
       );
     }
   }
