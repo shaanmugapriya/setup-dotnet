@@ -87,28 +87,31 @@ export class DotnetVersionResolver {
   }
   private async fetchLatestVersion(): Promise<string> {
     const httpClient = new hc.HttpClient('actions/setup-dotnet', [], {
-        allowRetries: true,
-        maxRetries: 3
+      allowRetries: true,
+      maxRetries: 3
     });
     const response = await httpClient.getJson<any>(
-        DotnetVersionResolver.DotnetCoreIndexUrl
+      DotnetVersionResolver.DotnetCoreIndexUrl
     );
     if (response.result) {
-        // Iterate over the releases index in reverse order
-        for (let i = response.result['releases-index'].length - 1; i >= 0; i--) {
-            const release = response.result['releases-index'][i];
+      // Iterate over the releases index in reverse order
+      for (let i = response.result['releases-index'].length - 1; i >= 0; i--) {
+        const release = response.result['releases-index'][i];
 
-            // Check if the release version includes 'preview' or 'rc'
-            if (!release['latest-release'].includes('preview') && !release['latest-release'].includes('rc')) {
-                return release['latest-release'];
-            }
+        // Check if the release version includes 'preview' or 'rc'
+        if (
+          !release['latest-release'].includes('preview') &&
+          !release['latest-release'].includes('rc')
+        ) {
+          return release['latest-release'];
         }
+      }
 
-        throw new Error('No stable .NET version found');
+      throw new Error('No stable .NET version found');
     } else {
-        throw new Error('Unable to fetch .NET releases index');
+      throw new Error('Unable to fetch .NET releases index');
     }
-}
+  }
   public async createDotnetVersion(): Promise<DotnetVersion> {
     await this.resolveVersionInput();
     if (!this.resolvedArgument.type) {
