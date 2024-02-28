@@ -77,7 +77,7 @@ export class DotnetVersionResolver {
     } else if (this.isNumericTag(major)) {
       this.resolvedArgument.value = await this.getLatestByMajorTag(major);
     } else if (this.inputVersion === 'latest') {
-      this.inputVersion = await this.fetchLatestVersion();
+      this.resolvedArgument.value = await this.fetchLatestVersion();
     } else {
       // If "dotnet-version" is specified as *, x or X resolve latest version of .NET explicitly from LTS channel. The version argument will default to "latest" by install-dotnet script.
       this.resolvedArgument.value = 'LTS';
@@ -94,7 +94,6 @@ export class DotnetVersionResolver {
     const response = await httpClient.getJson<any>(
       DotnetVersionResolver.DotnetCoreIndexUrl
     );
-  
     if (response.result) {
       // The releases index is an array sorted in descending order of release, so the first entry is the latest
       const latestRelease = response.result['releases-index'][0];
@@ -102,7 +101,7 @@ export class DotnetVersionResolver {
       const latestVersion = latestRelease['latest-release'];
       return latestVersion;
     } else {
-      throw new Error("Unable to fetch latest .NET version");
+      throw new Error('Unable to fetch latest .NET version');
     }
   }
   public async createDotnetVersion(): Promise<DotnetVersion> {

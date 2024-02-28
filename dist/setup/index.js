@@ -93074,7 +93074,7 @@ class DotnetVersionResolver {
                 this.resolvedArgument.value = yield this.getLatestByMajorTag(major);
             }
             else if (this.inputVersion === 'latest') {
-                this.inputVersion = yield this.fetchLatestVersion();
+                this.resolvedArgument.value = yield this.fetchLatestVersion();
             }
             else {
                 // If "dotnet-version" is specified as *, x or X resolve latest version of .NET explicitly from LTS channel. The version argument will default to "latest" by install-dotnet script.
@@ -93100,7 +93100,7 @@ class DotnetVersionResolver {
                 return latestVersion;
             }
             else {
-                throw new Error("Unable to fetch latest .NET version");
+                throw new Error('Unable to fetch latest .NET version');
             }
         });
     }
