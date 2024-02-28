@@ -87,23 +87,28 @@ export class DotnetVersionResolver {
   }
   private async fetchLatestVersion(): Promise<string> {
     const httpClient = new hc.HttpClient('actions/setup-dotnet', [], {
-      allowRetries: true,
-      maxRetries: 3
+        allowRetries: true,
+        maxRetries: 3
     });
-    // Fetch the .NET releases index from Microsoft
     const response = await httpClient.getJson<any>(
-      DotnetVersionResolver.DotnetCoreIndexUrl
+        DotnetVersionResolver.DotnetCoreIndexUrl
     );
     if (response.result) {
-      // The releases index is an array sorted in descending order of release, so the first entry is the latest
-      const latestRelease = response.result['releases-index'][0];
-      // The latest version is found in the 'latest-release' field
-      const latestVersion = latestRelease['latest-release'];
-      return latestVersion;
+        // Iterate over the releases index in reverse order
+        for (let i = response.result['releases-index'].length - 1; i >= 0; i--) {
+            const release = response.result['releases-index'][i];
+
+            // Check if the release version includes 'preview' or 'rc'
+            if (!release['latest-release'].includes('preview') && !release['latest-release'].includes('rc')) {
+                return release['latest-release'];
+            }
+        }
+
+        throw new Error('No stable .NET version found');
     } else {
-      throw new Error('Unable to fetch latest .NET version');
+        throw new Error('Unable to fetch .NET releases index');
     }
-  }
+}
   public async createDotnetVersion(): Promise<DotnetVersion> {
     await this.resolveVersionInput();
     if (!this.resolvedArgument.type) {
