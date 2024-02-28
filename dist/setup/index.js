@@ -93090,21 +93090,24 @@ class DotnetVersionResolver {
                 allowRetries: true,
                 maxRetries: 3
             });
+            // Fetch the .NET releases index from Microsoft
             const response = yield httpClient.getJson(DotnetVersionResolver.DotnetCoreIndexUrl);
             if (response.result) {
-                // Iterate over the releases index in reverse order
-                for (let i = response.result['releases-index'].length - 1; i >= 0; i--) {
-                    const release = response.result['releases-index'][i];
-                    // Check if the release version includes 'preview' or 'rc'
-                    if (!release['latest-release'].includes('preview') &&
-                        !release['latest-release'].includes('rc')) {
-                        return release['latest-release'];
-                    }
+                // The releases index is an array sorted in descending order of release, so the first entry is the latest
+                const releasesInfo = response.result['releases-index'];
+                // Find the latest non-preview version
+                const latestRelease = releasesInfo.find(info => !info['release-version'].includes('preview'));
+                if (latestRelease) {
+                    // The latest version is found in the 'latest-release' field
+                    const latestVersion = latestRelease['latest-release'];
+                    return latestVersion;
                 }
-                throw new Error('No stable .NET version found');
+                else {
+                    throw new Error('Unable to find latest non-preview .NET version');
+                }
             }
             else {
-                throw new Error('Unable to fetch .NET releases index');
+                throw new Error('Unable to fetch latest .NET version');
             }
         });
     }
