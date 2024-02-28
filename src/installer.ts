@@ -98,7 +98,9 @@ export class DotnetVersionResolver {
       // The releases index is an array sorted in descending order of release, so the first entry is the latest
       const releasesInfo: any[] = response.result['releases-index'];
       // Find the latest non-preview version
-      const latestRelease = releasesInfo.find(info => !info['release-version'].includes('preview'));
+      const latestRelease = releasesInfo.find(
+        info => !info['release-version'].includes('preview')
+      );
       if (latestRelease) {
         // The latest version is found in the 'latest-release' field
         const latestVersion = latestRelease['latest-release'];
