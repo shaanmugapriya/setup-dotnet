@@ -93099,7 +93099,7 @@ class DotnetVersionResolver {
                 return latestVersion;
             }
             else {
-                throw new Error("Unable to fetch latest .NET version");
+                throw new Error('Unable to fetch latest .NET version');
             }
         });
     }

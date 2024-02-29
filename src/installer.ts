@@ -100,7 +100,7 @@ export class DotnetVersionResolver {
       const latestVersion = latestRelease['latest-sdk'];
       return latestVersion;
     } else {
-      throw new Error("Unable to fetch latest .NET version");
+      throw new Error('Unable to fetch latest .NET version');
     }
   }
   public async createDotnetVersion(): Promise<DotnetVersion> {
