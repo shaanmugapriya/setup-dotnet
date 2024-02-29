@@ -94,26 +94,13 @@ export class DotnetVersionResolver {
       DotnetVersionResolver.DotnetCoreIndexUrl
     );
     if (response.result) {
-      // Iterate over the releases index in reverse order
-      const ltsversion: string[] = [];
-      for (let i = response.result['releases-index'].length - 1; i >= 0; i--) {
-        const release = response.result['releases-index'][i];
-
-        // Check if the release version includes 'preview' or 'rc'
-        if (
-          !release['latest-release'].includes('preview') &&
-          !release['latest-release'].includes('rc')
-        ) {
-          ltsversion.push(release['latest-sdk']);
-        }
-      }
-      if (ltsversion.length > 0) {
-        return ltsversion[ltsversion.length - 1];
-      } else {
-        throw new Error('No stable .NET version found');
-      }
+      // The releases index is an array sorted in descending order of release, so the first entry is the latest
+      const latestRelease = response.result['releases-index'][0];
+      // The latest version is found in the 'latest-release' field
+      const latestVersion = latestRelease['latest-sdk'];
+      return latestVersion;
     } else {
-      throw new Error('Unable to fetch .NET releases index');
+      throw new Error("Unable to fetch latest .NET version");
     }
   }
   public async createDotnetVersion(): Promise<DotnetVersion> {
