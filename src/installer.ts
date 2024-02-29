@@ -95,6 +95,7 @@ export class DotnetVersionResolver {
     );
     if (response.result) {
       // Iterate over the releases index in reverse order
+      var ltsversion: string[] = [];
       for (let i = response.result['releases-index'].length - 1; i >= 0; i--) {
         const release = response.result['releases-index'][i];
 
@@ -103,11 +104,14 @@ export class DotnetVersionResolver {
           !release['latest-release'].includes('preview') &&
           !release['latest-release'].includes('rc')
         ) {
-          return release['latest-release'];
+          ltsversion.push(release['latest-release']);
         }
       }
-
-      throw new Error('No stable .NET version found');
+      if (ltsversion.length > 0) {
+        return ltsversion[ltsversion.length - 1];
+      } else {
+        throw new Error('No stable .NET version found');
+      }
     } else {
       throw new Error('Unable to fetch .NET releases index');
     }
