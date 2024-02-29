@@ -96,18 +96,21 @@ export class DotnetVersionResolver {
     if (response.result) {
       // Iterate over the releases index in reverse order
       for (let i = response.result['releases-index'].length - 1; i >= 0; i--) {
-          const release = response.result['releases-index'][i];
+        const release = response.result['releases-index'][i];
 
-          // Check if the release version includes 'preview' or 'rc'
-          if (!release['latest-release'].includes('preview') && !release['latest-release'].includes('rc')) {
-              return release['latest-release'];
-          }
+        // Check if the release version includes 'preview' or 'rc'
+        if (
+          !release['latest-release'].includes('preview') &&
+          !release['latest-release'].includes('rc')
+        ) {
+          return release['latest-release'];
+        }
       }
 
       throw new Error('No stable .NET version found');
-  } else {
+    } else {
       throw new Error('Unable to fetch .NET releases index');
-  }
+    }
   }
   public async createDotnetVersion(): Promise<DotnetVersion> {
     await this.resolveVersionInput();

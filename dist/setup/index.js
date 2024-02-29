@@ -93096,7 +93096,8 @@ class DotnetVersionResolver {
                 for (let i = response.result['releases-index'].length - 1; i >= 0; i--) {
                     const release = response.result['releases-index'][i];
                     // Check if the release version includes 'preview' or 'rc'
-                    if (!release['latest-release'].includes('preview') && !release['latest-release'].includes('rc')) {
+                    if (!release['latest-release'].includes('preview') &&
+                        !release['latest-release'].includes('rc')) {
                         return release['latest-release'];
                     }
                 }
