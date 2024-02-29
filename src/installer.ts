@@ -104,7 +104,7 @@ export class DotnetVersionResolver {
           !release['latest-release'].includes('preview') &&
           !release['latest-release'].includes('rc')
         ) {
-          ltsversion.push(release['latest-release']);
+          ltsversion.push(release['latest-sdk']);
         }
       }
       if (ltsversion.length > 0) {

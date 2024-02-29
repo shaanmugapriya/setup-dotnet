@@ -93099,7 +93099,7 @@ class DotnetVersionResolver {
                     // Check if the release version includes 'preview' or 'rc'
                     if (!release['latest-release'].includes('preview') &&
                         !release['latest-release'].includes('rc')) {
-                        ltsversion.push(release['latest-release']);
+                        ltsversion.push(release['latest-sdk']);
                     }
                 }
                 if (ltsversion.length > 0) {
