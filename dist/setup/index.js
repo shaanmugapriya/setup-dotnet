@@ -93093,7 +93093,7 @@ class DotnetVersionResolver {
             const response = yield httpClient.getJson(DotnetVersionResolver.DotnetCoreIndexUrl);
             if (response.result) {
                 // Iterate over the releases index in reverse order
-                var ltsversion = [];
+                const ltsversion = [];
                 for (let i = response.result['releases-index'].length - 1; i >= 0; i--) {
                     const release = response.result['releases-index'][i];
                     // Check if the release version includes 'preview' or 'rc'

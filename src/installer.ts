@@ -95,7 +95,7 @@ export class DotnetVersionResolver {
     );
     if (response.result) {
       // Iterate over the releases index in reverse order
-      var ltsversion: string[] = [];
+      const ltsversion: string[] = [];
       for (let i = response.result['releases-index'].length - 1; i >= 0; i--) {
         const release = response.result['releases-index'][i];
 
