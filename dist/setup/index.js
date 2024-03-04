@@ -93030,6 +93030,9 @@ class DotnetVersionResolver {
     }
     resolveVersionInput() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.inputVersion === 'latest') {
+                this.inputVersion = yield this.fetchLatestVersion();
+            }
             if (!semver_1.default.validRange(this.inputVersion) && !this.isLatestPatchSyntax()) {
                 throw new Error(`The 'dotnet-version' was supplied in invalid format: ${this.inputVersion}! Supported syntax: A.B.C, A.B, A.B.x, A, A.x, A.B.Cxx`);
             }
@@ -93070,12 +93073,34 @@ class DotnetVersionResolver {
             else if (this.isNumericTag(major)) {
                 this.resolvedArgument.value = yield this.getLatestByMajorTag(major);
             }
+            else if (this.inputVersion === 'latest') {
+                this.resolvedArgument.value = yield this.fetchLatestVersion();
+            }
             else {
                 // If "dotnet-version" is specified as *, x or X resolve latest version of .NET explicitly from LTS channel. The version argument will default to "latest" by install-dotnet script.
                 this.resolvedArgument.value = 'LTS';
             }
             this.resolvedArgument.qualityFlag =
                 parseInt(major) >= QUALITY_INPUT_MINIMAL_MAJOR_TAG ? true : false;
+        });
+    }
+    fetchLatestVersion() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const httpClient = new hc.HttpClient('actions/setup-dotnet', [], {
+                allowRetries: true,
+                maxRetries: 3
+            });
+            const response = yield httpClient.getJson(DotnetVersionResolver.DotnetCoreIndexUrl);
+            if (response.result) {
+                // The releases index is an array sorted in descending order of release, so the first entry is the latest
+                const latestRelease = response.result['releases-index'][0];
+                // The latest version is found in the 'latest-release' field
+                const latestVersion = latestRelease['latest-sdk'];
+                return latestVersion;
+            }
+            else {
+                throw new Error('Unable to fetch latest .NET version');
+            }
         });
     }
     createDotnetVersion() {

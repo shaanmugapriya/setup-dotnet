@@ -28,6 +28,9 @@ export class DotnetVersionResolver {
   }
 
   private async resolveVersionInput(): Promise<void> {
+    if (this.inputVersion === 'latest') {
+      this.inputVersion = await this.fetchLatestVersion();
+    }
     if (!semver.validRange(this.inputVersion) && !this.isLatestPatchSyntax()) {
       throw new Error(
         `The 'dotnet-version' was supplied in invalid format: ${this.inputVersion}! Supported syntax: A.B.C, A.B, A.B.x, A, A.x, A.B.Cxx`
@@ -73,6 +76,8 @@ export class DotnetVersionResolver {
       this.resolvedArgument.value = `${major}.${minor}`;
     } else if (this.isNumericTag(major)) {
       this.resolvedArgument.value = await this.getLatestByMajorTag(major);
+    } else if (this.inputVersion === 'latest') {
+      this.resolvedArgument.value = await this.fetchLatestVersion();
     } else {
       // If "dotnet-version" is specified as *, x or X resolve latest version of .NET explicitly from LTS channel. The version argument will default to "latest" by install-dotnet script.
       this.resolvedArgument.value = 'LTS';
@@ -80,7 +85,24 @@ export class DotnetVersionResolver {
     this.resolvedArgument.qualityFlag =
       parseInt(major) >= QUALITY_INPUT_MINIMAL_MAJOR_TAG ? true : false;
   }
-
+  private async fetchLatestVersion(): Promise<string> {
+    const httpClient = new hc.HttpClient('actions/setup-dotnet', [], {
+      allowRetries: true,
+      maxRetries: 3
+    });
+    const response = await httpClient.getJson<any>(
+      DotnetVersionResolver.DotnetCoreIndexUrl
+    );
+    if (response.result) {
+      // The releases index is an array sorted in descending order of release, so the first entry is the latest
+      const latestRelease = response.result['releases-index'][0];
+      // The latest version is found in the 'latest-release' field
+      const latestVersion = latestRelease['latest-sdk'];
+      return latestVersion;
+    } else {
+      throw new Error('Unable to fetch latest .NET version');
+    }
+  }
   public async createDotnetVersion(): Promise<DotnetVersion> {
     await this.resolveVersionInput();
     if (!this.resolvedArgument.type) {
